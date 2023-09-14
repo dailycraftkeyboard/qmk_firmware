@@ -142,3 +142,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define ENCODERS_PAD_A { D4, D7 }
 #define ENCODERS_PAD_B { C6, E6 }
+
+#define USB_MAX_POWER_CONSUMPTION 100
