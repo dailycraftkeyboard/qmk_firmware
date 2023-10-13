@@ -1,18 +1,18 @@
-/*
-Copyright 2012 Jun Wako <wakojun@gmail.com>
-Copyright 2015 Jack Humbert
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+/* Copyright 2021 yfuku
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include QMK_KEYBOARD_H
 #include "yfuku_keymaps.h"
 
@@ -49,27 +49,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        __QWERTY_L1__,                __QWERTY_R1__,
        __QWERTY_L2__,  KC_NO, KC_NO, __QWERTY_R2__,
        __QWERTY_L3__,  KC_NO,  LOCK, __QWERTY_R3__,
-       __QUERTY_T4__
+       __QUERTY_T3__
     ),
 
     [_RAISE] = LAYOUT_wrapper(
        __RAISE_L1__,              __RAISE_R1__,
        __RAISE_L2__,  ____, ____, __RAISE_R2__,
        __RAISE_L3__,  ____, ____, __RAISE_R3__,
-       __RAISE_T4__
+       __RAISE_T3__
     ),
 
     [_LOWER] = LAYOUT_wrapper(
        __LOWER_L1__,              __LOWER_R1__,
        __LOWER_L2__,  ____, ____, __LOWER_R2__,
        __LOWER_L3__,  ____, ____, __LOWER_R3__,
-       __LOWER_T4__
+       __LOWER_T3__
     ),
+
     [_ADJUST] = LAYOUT_wrapper(
        __TRANSx6__,              __TRANSx6__,
        __TRANSx6__, __TRANSx2__, __TRANSx6__,
        __TRANSx6__, __TRANSx2__, __TRANSx6__,
-       __TRANSx4__, __TRANSx4__
+       __TRANSx3__, __TRANSx3__
     ),
 };
 

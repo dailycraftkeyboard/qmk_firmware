@@ -6,6 +6,7 @@
 #define RST QK_BOOT
 #define VD KC__VOLDOWN
 #define VU KC__VOLUP
+#define LOCK C(G(KC_Q))
 
 // layer
 #define L_SPC LT(_LOWER, KC_SPC)
@@ -40,8 +41,8 @@
 #define __QWERTY_R2__ C_H, G_J, A_K, GS_L, KC_SCLN, KC_ESC 
 #define __QWERTY_R3__ KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RGHT
 
-#define __QUERTY_T3__ KC_UP, S_EN, L_SPC, R_ENT, S_JA, KC_DOWN
-#define __QUERTY_T4__ KC_UP, S_EN, L_SPC, C_BS, C_BS, R_ENT, S_JA, KC_DOWN
+#define __QUERTY_T3__ KC_RGHT, S_EN, L_SPC, R_ENT, S_JA, KC_LEFT
+#define __QUERTY_T4__ KC_RGHT, S_EN, L_SPC, C_BS, C_BS, R_ENT, S_JA, KC_LEFT
 
 #define __RAISE_L1__ ____,KC_BSLS,KC_EXLM,KC_AMPR,KC_PIPE,____
 #define __RAISE_L2__ ____,KC_HASH,KC_GRV,KC_DQT,KC_QUOT,KC_TILD
@@ -67,7 +68,7 @@
 #define __LOWER_T4__ ____,____,____,____,____,____,____,____
 */
 
-#define __LOWER_L1__ ____,LCTL(KC_1),LCTL(KC_2),LCTL(KC_3),LCTL(KC_4),LCTL(KC_5)
+#define __LOWER_L1__ ____,S(LAG(KC_1)),S(LAG(KC_2)),S(LAG(KC_3)),S(LAG(KC_4)),S(LAG(KC_5))
 #define __LOWER_L2__ ____,KC_1,KC_2,KC_3,KC_4,KC_5
 #define __LOWER_L3__ ____,____,____,____,____,____
 
@@ -80,4 +81,5 @@
 
 #define __TRANSx6__ ____,____,____,____,____,____
 #define __TRANSx4__ ____,____,____,____
+#define __TRANSx3__ ____,____,____
 #define __TRANSx2__ ____,____
