@@ -28,7 +28,8 @@ enum layer_number {
     _ADJUST,
 };
 
-#define TAPPING_LAYER_TERM 230
+#define TAPPING_LAYER_TERM 250
+#define TAPPING_LAYER_LATE_TERM 800
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case GS_S:
@@ -36,17 +37,17 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     case GS_L:
       return TAPPING_LAYER_TERM;
     case A_D:
-      return TAPPING_LAYER_TERM;
+      return TAPPING_LAYER_LATE_TERM;
     case A_K:
-      return TAPPING_LAYER_TERM;
+      return TAPPING_LAYER_LATE_TERM;
     case AS_A:
-      return TAPPING_LAYER_TERM;
+      return TAPPING_LAYER_LATE_TERM;
     case AS_SCLN:
-      return TAPPING_LAYER_TERM;
+      return TAPPING_LAYER_LATE_TERM;
     case ASG_TAB:
-      return TAPPING_LAYER_TERM;
+      return TAPPING_LAYER_LATE_TERM;
     case ASG_ESC:
-      return TAPPING_LAYER_TERM;
+      return TAPPING_LAYER_LATE_TERM;
     default:
       return 180;
   }
