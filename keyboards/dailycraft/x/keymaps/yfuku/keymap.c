@@ -34,9 +34,9 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT_wrapper(
-       __QWERTY_L1__,                __QWERTY_R1__,
-       __QWERTY_L2__,  KC_NO,        __QWERTY_R2__,
-       __QWERTY_L3__,  KC_NO, KC_NO, __QWERTY_R3__,
+       __QWERTY_L1__,              __QWERTY_R1__,
+       __QWERTY_L2__,  KC_A,       __QWERTY_R2__,
+       __QWERTY_L3__,  KC_B, KC_C, __QWERTY_R3__,
        __QUERTY_T3__
     ),
 
