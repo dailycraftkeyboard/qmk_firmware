@@ -27,6 +27,8 @@ bool key_pressed[RGB_MATRIX_LED_COUNT] = {false};
 
 // 関数プロトタイプ
 void initialize_led_colors(void);
+// rgb_matrix_user.incで定義される関数のプロトタイプ
+bool process_record_rgb_matrix_user(uint16_t keycode, record_t *record);
 #endif
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
@@ -225,7 +227,8 @@ void keyboard_post_init_user(void) {
     #ifdef RGB_MATRIX_ENABLE
     dprintf("matrix: keyboard_post_init_user\n");
     rgb_matrix_enable();
-    rgb_matrix_mode(RGB_MATRIX_NONE);
+    // pad64_effectモードを設定
+    rgb_matrix_mode(RGB_MATRIX_CUSTOM_pad64_effect);
     initialize_led_colors();
     #endif
 }
@@ -235,7 +238,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     dprintf("process_record_user\n");
 
     #ifdef RGB_MATRIX_ENABLE
-    dprintf("uoooooooooooooooooo");
+    dprintf("process_record_rgb_matrix_user\n");
+    // RGB行列のカスタムエフェクト用の関数を呼び出す
+    process_record_rgb_matrix_user(keycode, record);
     #endif
     return true;
 }

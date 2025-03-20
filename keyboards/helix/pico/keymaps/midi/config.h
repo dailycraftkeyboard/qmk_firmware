@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     //#define RGB_MATRIX_LIMIT_VAL 150  // 輝度の上限
 
     // モード設定
-    //#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_myef_mod_func
+    #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_pad64_effect
 
 #endif
 
