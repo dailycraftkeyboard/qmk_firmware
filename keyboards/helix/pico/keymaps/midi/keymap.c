@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "rgb_matrix.h"
 
 // RGB Matrixの設定
 #ifdef RGB_MATRIX_ENABLE
@@ -60,26 +61,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       MI_F1,   MI_Fs1,  MI_G1,   MI_Gs1,  MI_A1,   MI_As1,                     MI_Cs3,  MI_D3,   MI_Ds3,  MI_E3,   MI_F3,   MI_Fs3,
       MI_C1,   MI_Cs1,  MI_D1,   MI_Ds1,  MI_E1,   MI_F1,                      MI_Gs2,  MI_A2,   MI_As2,  MI_B2,   MI_C3,   MI_Cs3,
       MI_G,    MI_Gs,   MI_A,    MI_As,   MI_B,    MI_C1,                       MI_Ds2,  MI_E2,   MI_F2,  MI_Fs2,  MI_G2,   MI_Gs2,
-      MI_D,    MI_Ds,   MI_E,    MI_F,    MI_Fs,   MI_G,    ADJUST, QK_BOOT,  MI_As1,  MI_B1,   MI_C2,   MI_Cs2,  MI_D2,   MI_Ds2
+      MI_D,    MI_Ds,   MI_E,    MI_F,    MI_Fs,   MI_G,    MO(_ADJUST), MO(ADJUST),  MI_As1,  MI_B1,   MI_C2,   MI_Cs2,  MI_D2,   MI_Ds2
       ),
 
-
-  /* Adjust (Lower + Raise)
-   * ,-----------------------------------------.             ,-----------------------------------------.
-   * |      | Reset|RGBRST|      |      |      |             |      |      |      |      |      |      |
-   * |------+------+------+------+------+------|             |------+------+------+------+------+------|
-   * |      |Aud on|Audoff|MU TOG|MU MOD| Mac  |             | Win  |Qwerty|Colemk|Dvorak|      |      |
-   * |------+------+------+------+------+------|             |------+------+------+------+------+------|
-   * |      |CK TOG|CK RST| CK UP|CK DWN|      |             |      |      |RGB ON| HUE+ | SAT+ | VAL+ |
-   * |------+------+------+------+------+------+-------------+------+------+------+------+------+------|
-   * |      |      |      |      |      |      |      |      |      |      | MODE | HUE- | SAT- | VAL- |
-   * `-------------------------------------------------------------------------------------------------'
-   */
   [_ADJUST] =  LAYOUT(
-      _______, KC_F1,   KC_F2, KC_F3, KC_F4, _______,                  _______, _______, _______, _______, _______, _______,
-      _______, AU_ON,   AU_OFF,  MU_TOGG, MU_NEXT, AG_NORM,                   AG_SWAP, QWERTY,  _______, _______, _______, _______,
-      _______, CK_TOGG, CK_RST,  CK_UP,   CK_DOWN, _______,                   _______, _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI,
-      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD
+      RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, _______, _______,                  _______, _______, _______, _______, _______, _______,
+      RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD, _______, _______,                  _______, _______, _______, _______, _______, _______,
+      RGB_RMOD, RGB_MOD, _______, _______, _______, _______,                  _______, _______, _______, _______, _______, _______,
+      RGB_TOG, RGB_MOD, RGB_RMOD, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
       )
 };
 
@@ -90,13 +79,13 @@ led_config_t g_led_config = {
     {
         // 左側のキーボード
         { 5,  4,  3,  2,  1,  0 , NO_LED},
-        { 11, 10,  9,  8,  7,  6 , NO_LED},
-        { 12, 13, 14, 15, 16, 17 , NO_LED},
-        { 24, 23, 22, 21, 20, 19 , 18},
+        { 6, 7,  8,  9,  10, 11 , NO_LED},
+        { 17, 16, 15, 14, 13, 12 , NO_LED},
+        { 18, 19, 20, 21, 22, 23 , 24},
         // 右側のキーボード
-        { 25, 26, 27, 28, 29, 30 , NO_LED},
-        { 31, 32, 33, 34, 35, 36 , NO_LED},
-        { 37, 38, 39, 40, 41, 42 , NO_LED},
+        { 30, 29, 28, 27, 26, 25, NO_LED},
+        { 31, 32, 33, 34, 35, 36, NO_LED},
+        { 42, 41, 40, 39, 38, 37, NO_LED},
         { 43, 44, 45, 46, 47, 48, 49 }
     },
     // LEDの物理的な位置
