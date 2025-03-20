@@ -62,11 +62,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    */
 
 [_QWERTY] = LAYOUT(
-      KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    MI_C,                      KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
-      KC_LCTL, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                      KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-      KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                      KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT ,
-      ADJUST,  KC_ESC,  KC_LALT, KC_LGUI, _______, LOWER,   KC_SPC,  KC_SPC,  RAISE,   _______, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+      MI_F1,   MI_Fs1,  MI_G1,   MI_Gs1,  MI_A1,   MI_As1,                     MI_Cs3,  MI_D3,   MI_Ds3,  MI_E3,   MI_F3,   MI_Fs3,
+      MI_C1,   MI_Cs1,  MI_D1,   MI_Ds1,  MI_E1,   MI_F1,                      MI_Gs2,  MI_A2,   MI_As2,  MI_B2,   MI_C3,   MI_Cs3,
+      MI_G,    MI_Gs,   MI_A,    MI_As,   MI_B,    MI_C1,                       MI_Ds2,  MI_E2,   MI_F2,  MI_Fs2,  MI_G2,   MI_Gs2,
+      MI_D,    MI_Ds,   MI_E,    MI_F,    MI_Fs,   MI_G,    QK_BOOT, QK_BOOT,  MI_As1,  MI_B1,   MI_C2,   MI_Cs2,  MI_D2,   MI_Ds2
       ),
+
+
 [_LOWER] = LAYOUT(
       KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                   KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_DEL,
       _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                     KC_F6,   KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,
@@ -237,9 +239,23 @@ void matrix_init_user(void) {
     #endif
     #ifdef RGBLIGHT_ENABLE
       RGB_current_mode = rgblight_config.mode;
+      // Cの音の場所を紫色に設定
+      rgblight_enable();
+      rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
+      rgblight_sethsv_at(191, 255, 255, 0);  // 一番下のC (紫色)
+      rgblight_sethsv_at(191, 255, 255, 3);  // 一番上のC1 (紫色)
     #endif
 }
 
+void keyboard_post_init_user(void) {
+    #ifdef RGBLIGHT_ENABLE
+      // Cの音の場所を紫色に設定（初期化後）
+      rgblight_enable();
+      rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
+      rgblight_sethsv_at(191, 255, 255, 0);  // 一番下のC (紫色)
+      rgblight_sethsv_at(191, 255, 255, 3);  // 一番上のC1 (紫色)
+    #endif
+}
 
 #ifdef AUDIO_ENABLE
 
