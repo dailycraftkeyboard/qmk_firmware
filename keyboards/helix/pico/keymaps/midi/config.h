@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     // WS2812ドライバーの設定
     #define RGB_DI_PIN D3  // LEDのデータピン
     #define RGB_MATRIX_LED_COUNT 50
-    #define RGB_MATRIX_SPLIT { 25, 25 }  // 左右それぞれのLED数
+    //#define RGB_MATRIX_SPLIT { 25, 25 }  // 左右それぞれのLED数
     //#define SPLIT_TRANSPORT_MIRROR  // 左右のLED状態を同期
     
     // 輝度設定
