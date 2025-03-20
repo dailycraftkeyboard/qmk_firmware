@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // place overrides here
 
 #ifdef RGB_MATRIX_ENABLE
-    #define RGB_MATRIX_KEYPRESSES // reacts to keypresses
-
     // WS2812ドライバーの設定
     #define RGB_DI_PIN D3  // LEDのデータピン
     #define RGB_MATRIX_LED_COUNT 50
@@ -32,21 +30,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     //#define SPLIT_TRANSPORT_MIRROR  // 左右のLED状態を同期
     
     // 輝度設定
-    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 50  // 最大輝度（0-255）を50に下げる
-    #define RGB_MATRIX_DEFAULT_VAL 50  // デフォルトの輝度
-    //#define RGB_MATRIX_LIMIT_VAL 50  // 輝度の上限
+    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 150  // 最大輝度（0-255）を150に設定
+    #define RGB_MATRIX_DEFAULT_VAL 150  // デフォルトの輝度
+    //#define RGB_MATRIX_LIMIT_VAL 150  // 輝度の上限
 
-    
     // モード設定
-    #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR
-    
-    // エフェクトの選択
-    #define ENABLE_RGB_MATRIX_SOLID_COLOR  // 単色モード
-    #define ENABLE_RGB_MATRIX_ALPHAS_MODS  // アルファキーとモディファイアキーで異なる色
-    #define ENABLE_RGB_MATRIX_BREATHING  // ブリージングエフェクト
-    #define ENABLE_RGB_MATRIX_SOLID_REACTIVE  // キープレスに反応するエフェクト
-    #define ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE  // シンプルなキープレス反応エフェクト
+    //#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_myef_mod_func
 
 #endif
 
 #define MIDI_ADVANCED
+
+#define DEBUG_ENABLE

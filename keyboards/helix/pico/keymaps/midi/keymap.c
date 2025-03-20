@@ -13,21 +13,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <stdio.h>
 #include QMK_KEYBOARD_H
 #include "rgb_matrix.h"
 
 // RGB Matrixの設定
 #ifdef RGB_MATRIX_ENABLE
-// Cキーのインデックス
-const uint8_t c_key_indices[] = {17, 35, 45};
-
-// Cメジャースケールのキーのインデックス（C以外）
-const uint8_t c_major_scale_indices[] = {
-    // D, E, F, G, A, B
-    8, 20, 21, 2, 14, 16,  // 左側
-    26, 28, 29, 41, 32, 34 // 右側
-};
-
 // キーの元の色を保存する配列
 uint8_t original_colors[RGB_MATRIX_LED_COUNT][3];
 
@@ -36,23 +27,6 @@ bool key_pressed[RGB_MATRIX_LED_COUNT] = {false};
 
 // 関数プロトタイプ
 void initialize_led_colors(void);
-
-// RGB Matrixのカスタムインジケーター関数
-// この関数は、RGB Matrixのエフェクトが適用された後に呼び出される
-bool rgb_matrix_indicators_user(void) {
-    // すべてのLEDを初期状態に設定
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        // キーが押されていない場合のみ元の色に設定
-        if (!key_pressed[i]) {
-            rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
-        } else {
-            // キーが押されている場合は緑色に設定
-            rgb_matrix_set_color(i, 0, 255, 0);
-        }
-    }
-    
-    return false;
-}
 #endif
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
@@ -89,7 +63,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, _______, _______,                  _______, _______, _______, _______, _______, _______,
       RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD, _______, _______,                  _______, _______, _______, _______, _______, _______,
       RGB_RMOD, RGB_MOD, _______, _______, _______, _______,                  _______, _______, _______, _______, _______, _______,
-      RGB_TOG, RGB_MOD, RGB_RMOD, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+      RGB_TOG, RGB_MOD, RGB_RMOD, _______, _______, QK_BOOTLOADER, _______, _______, _______, _______, _______, _______, _______, _______
       )
 };
 
@@ -197,14 +171,17 @@ bool is_c_major_scale(uint16_t note) {
 
 // すべてのLEDの色を初期化する関数
 void initialize_led_colors(void) {
+    dprintf("initialize_led_colors\n");
     // すべてのLEDを黒（消灯）に初期化
     for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
         original_colors[i][0] = 0;
         original_colors[i][1] = 0;
         original_colors[i][2] = 0;
+        rgb_matrix_set_color(i, 0, 0, 125);
     }
     
     // MIDIノートに対応するLEDの色を設定
+    /*
     for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
         uint16_t note = midi_led_map[i].note;
         uint8_t led_idx = midi_led_map[i].led_idx;
@@ -231,26 +208,38 @@ void initialize_led_colors(void) {
             rgb_matrix_set_color(led_idx, 50, 50, 50);
         }
     }
+    */
 }
 
 // keyboard_post_init_user関数
+void keyboard_post_init_kb(void) {
+    dprintf("keyboard_post_init_kb\n");
+    keyboard_post_init_user();
+}
+
 void keyboard_post_init_user(void) {
+    debug_enable=true;
+    //debug_matrix=true;
+    dprintf("keyboard_post_init_user\n");
+
     #ifdef RGB_MATRIX_ENABLE
-    // RGB Matrixを有効化
+    dprintf("matrix: keyboard_post_init_user\n");
     rgb_matrix_enable();
-    rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
-    
-    // すべてのLEDを黒（消灯）に設定
-    rgb_matrix_sethsv(0, 0, 0);
-    
-    // 少し待機（安定化のため）
-    wait_ms(100);
-    
-    // LEDの色を初期化
+    rgb_matrix_mode(RGB_MATRIX_NONE);
     initialize_led_colors();
     #endif
 }
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    printf("print process_record_user\n");
+    dprintf("process_record_user\n");
+
+    #ifdef RGB_MATRIX_ENABLE
+    dprintf("uoooooooooooooooooo");
+    #endif
+    return true;
+}
+/*
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     #ifdef RGB_MATRIX_ENABLE
     // MIDIノートキーコードの場合
@@ -273,7 +262,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     uint16_t other_note = midi_led_map[i].note;
                     uint8_t other_led_idx = midi_led_map[i].led_idx;
                     
-                    if (get_midi_note_value(other_note) == note_value && (other_note - MI_C) / 12 == octave && other_led_idx != led_idx) {
+                    if (get_midi_note_value(other_note) == note_value &&
+                        (other_note - MI_C) / 12 == octave &&
+                        other_led_idx != led_idx) {
                         key_pressed[other_led_idx] = true;
                         rgb_matrix_set_color(other_led_idx, 0, 255, 0);
                     }
@@ -293,7 +284,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     uint16_t other_note = midi_led_map[i].note;
                     uint8_t other_led_idx = midi_led_map[i].led_idx;
                     
-                    if (get_midi_note_value(other_note) == note_value && (other_note - MI_C) / 12 == octave && other_led_idx != led_idx) {
+                    if (get_midi_note_value(other_note) == note_value &&
+                        (other_note - MI_C) / 12 == octave &&
+                        other_led_idx != led_idx) {
                         key_pressed[other_led_idx] = false;
                         rgb_matrix_set_color(other_led_idx, original_colors[other_led_idx][0], original_colors[other_led_idx][1], original_colors[other_led_idx][2]);
                     }
@@ -305,8 +298,5 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     
     return true;
 }
+*/
 
-// マトリックススキャン関数
-void matrix_scan_user(void) {
-    // 必要に応じて処理を追加
-}
