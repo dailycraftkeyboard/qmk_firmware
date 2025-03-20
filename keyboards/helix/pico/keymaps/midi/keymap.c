@@ -166,7 +166,12 @@ bool is_c_major_scale(uint16_t note) {
 
 // すべてのLEDの色を初期化する関数
 void initialize_led_colors(void) {
-    // キーマップをスキャンして、各キーのLEDの色を設定
+    // まず、すべてのLEDを消灯に初期化
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        set_original_color(i, 0, 0, 0);
+    }
+    
+    // キーマップをスキャンして、MIDIキーのLEDの色を設定
     for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
         for (uint8_t col = 0; col < MATRIX_COLS; col++) {
             uint8_t led_idx = g_led_config.matrix_co[row][col];
@@ -178,18 +183,22 @@ void initialize_led_colors(void) {
                 
                 // MIDIノートキーコードの場合のみ処理
                 if (keycode >= MI_C && keycode <= MI_Ds5) {
-                    // Cノートは紫色 (191, 0, 255)
+                    // Cノートは紫色（輝度を下げた）
                     if (is_c_note(keycode)) {
-                        set_original_color(led_idx, 191, 0, 255);
+                        set_original_color(led_idx, 95, 0, 127);
                     }
-                    // Cメジャースケール（C以外）は青色 (0, 0, 255)
+                    // Cメジャースケール（C以外）は青色（輝度を下げた）
                     else if (is_c_major_scale(keycode)) {
-                        set_original_color(led_idx, 0, 0, 255);
+                        set_original_color(led_idx, 0, 0, 127);
                     }
                     // その他のノートは消灯 (0, 0, 0)
                     else {
                         set_original_color(led_idx, 0, 0, 0);
                     }
+                }
+                // MIDIノートキーコード以外は消灯
+                else {
+                    set_original_color(led_idx, 0, 0, 0);
                 }
             }
         }

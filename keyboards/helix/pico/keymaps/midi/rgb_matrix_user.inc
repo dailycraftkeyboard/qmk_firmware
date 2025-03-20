@@ -35,9 +35,9 @@ static bool pad64_effect(effect_params_t* params) {
     
     // すべてのLEDをスキャンして色を設定
     for (uint8_t i = led_min; i < led_max; i++) {
-        // キーが押されている場合は緑色に設定
+        // キーが押されている場合は緑色に設定（輝度を下げた）
         if (key_pressed[i]) {
-            rgb_matrix_set_color(i, 0, 255, 0);
+            rgb_matrix_set_color(i, 0, 127, 0);
         } else {
             // キーが押されていない場合は元の色に設定
             rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
