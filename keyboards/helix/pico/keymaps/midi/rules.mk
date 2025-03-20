@@ -1,4 +1,7 @@
 EXTRAKEY_ENABLE = yes       # Audio control and System control
-AUDIO_ENABLE = yes          # Audio output
+AUDIO_ENABLE = no          # Audio output
 MIDI_ENABLE = yes           # MIDI support
-LTO_ENABLE = no  # if firmware size over limit, try this option
+LTO_ENABLE = yes  # if firmware size over limit, try this option
+LED_ANIMATIONS = yes        # LED animations
+VIA_ENABLE = yes
+DYNAMIC_KEYMAP_LAYER_COUNT = 6
