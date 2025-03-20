@@ -136,70 +136,6 @@ float tone_plover_gb[][2]  = SONG(PLOVER_GOODBYE_SOUND);
 float music_scale[][2]     = SONG(MUSIC_SCALE_SOUND);
 #endif
 
-// define variables for reactive RGB
-bool TOG_STATUS = false;
-int RGB_current_mode;
-
-void persistent_default_layer_set(uint16_t default_layer) {
-  eeconfig_update_default_layer(default_layer);
-  default_layer_set(default_layer);
-}
-
-// Setting ADJUST layer RGB back to default
-void update_tri_layer_RGB(uint8_t layer1, uint8_t layer2, uint8_t layer3) {
-  if (IS_LAYER_ON(layer1) && IS_LAYER_ON(layer2)) {
-    #ifdef RGBLIGHT_ENABLE
-      //rgblight_mode(RGB_current_mode);
-    #endif
-    layer_on(layer3);
-  } else {
-    layer_off(layer3);
-  }
-}
-
-// process_record_user関数は436行目に定義されているため、ここでは削除
-
-void matrix_init_user(void) {
-    #ifdef AUDIO_ENABLE
-        startup_user();
-    #endif
-    #ifdef RGBLIGHT_ENABLE
-      RGB_current_mode = rgblight_config.mode;
-      // Cの音の場所を紫色に設定
-      rgblight_enable();
-      rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
-      rgblight_sethsv_at(191, 255, 255, 0);  // 一番下のC (紫色)
-      rgblight_sethsv_at(191, 255, 255, 3);  // 一番上のC1 (紫色)
-    #endif
-}
-
-// keyboard_post_init_user関数は397行目に定義されているため、ここでは削除
-
-#ifdef AUDIO_ENABLE
-
-void startup_user(void)
-{
-    _delay_ms(50); // gets rid of tick
-}
-
-void shutdown_user(void)
-{
-    _delay_ms(150);
-    stop_all_notes();
-}
-
-void music_on_user(void)
-{
-    music_scale_user();
-}
-
-void music_scale_user(void)
-{
-    PLAY_SONG(music_scale);
-}
-
-#endif
-
 #ifdef RGB_MATRIX_ENABLE
 // キーとLEDの対応関係を定義
 led_config_t g_led_config = {
@@ -310,27 +246,76 @@ bool key_pressed[RGB_MATRIX_LED_COUNT] = {false};
 
 // 元のkeyboard_post_init_user関数を修正
 void keyboard_post_init_user(void) {
-    #ifdef RGBLIGHT_ENABLE
-      // Cの音の場所を紫色に設定（初期化後）
-      rgblight_enable();
-      rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
-      rgblight_sethsv_at(191, 255, 255, 0);  // 一番下のC (紫色)
-      rgblight_sethsv_at(191, 255, 255, 3);  // 一番上のC1 (紫色)
-    #endif
-
     #ifdef RGB_MATRIX_ENABLE
     // RGB Matrixを有効化
     rgb_matrix_enable();
     rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
     
-    // すべてのLEDを赤色に設定
+    // すべてのLEDを黒（消灯）に設定
+    rgb_matrix_sethsv(0, 0, 0);
+    
+    // まず、すべてのLEDを赤色に設定して初期化確認
     for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
         rgb_matrix_set_color(i, 255, 0, 0);
+    }
+    
+    // 2秒待機
+    wait_ms(2000);
+    
+    // すべてのLEDを黒（消灯）に設定
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        rgb_matrix_set_color(i, 0, 0, 0);
+    }
+    
+    // 1秒待機
+    wait_ms(1000);
+    
+    // 各LEDを順番に点灯させて確認（デバッグ用）
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        // 現在のLEDを緑色に点灯
+        rgb_matrix_set_color(i, 0, 255, 0);
+        
+        // 0.1秒待機
+        wait_ms(100);
+        
+        // 現在のLEDを消灯
+        rgb_matrix_set_color(i, 0, 0, 0);
+    }
+    
+    // 1秒待機
+    wait_ms(1000);
+    
+    // Cキーを紫色に設定
+    for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
+        uint16_t note = midi_led_map[i].note;
+        uint8_t led_idx = midi_led_map[i].led_idx;
+        uint8_t note_value = get_midi_note_value(note);
+        
+        if (note_value == 0) { // Cキー
+            // Cキーは紫色 (RGB: 191, 0, 255)
+            rgb_matrix_set_color(led_idx, 191, 0, 255);
+            original_colors[led_idx][0] = 191;
+            original_colors[led_idx][1] = 0;
+            original_colors[led_idx][2] = 255;
+        } else if ((note_value == 2 || note_value == 4 || note_value == 5 ||
+                   note_value == 7 || note_value == 9 || note_value == 11) &&
+                   note_value != 0) { // Cメジャースケールのキー（C以外）
+            // Cメジャースケールのキー（C以外）は青色 (RGB: 0, 0, 255)
+            rgb_matrix_set_color(led_idx, 0, 0, 255);
+            original_colors[led_idx][0] = 0;
+            original_colors[led_idx][1] = 0;
+            original_colors[led_idx][2] = 255;
+        } else {
+            // その他のキーは消灯
+            rgb_matrix_set_color(led_idx, 0, 0, 0);
+            original_colors[led_idx][0] = 0;
+            original_colors[led_idx][1] = 0;
+            original_colors[led_idx][2] = 0;
+        }
     }
     #endif
 }
 
-// 元のprocess_record_user関数を修正
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     #ifdef RGB_MATRIX_ENABLE
     // MIDIノートキーコードの場合
@@ -383,85 +368,5 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     #endif
     
-    // 他のキーコードの処理
-    switch (keycode) {
-        case QWERTY:
-            if (record->event.pressed) {
-                #ifdef AUDIO_ENABLE
-                    PLAY_SONG(tone_qwerty);
-                #endif
-                persistent_default_layer_set(1UL<<_QWERTY);
-            }
-            return false;
-            break;
-        case LOWER:
-            if (record->event.pressed) {
-                if (TOG_STATUS) {
-                } else {
-                    TOG_STATUS = !TOG_STATUS;
-                }
-                layer_on(_LOWER);
-                update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-            } else {
-                TOG_STATUS = false;
-                layer_off(_LOWER);
-                update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-            }
-            return false;
-            break;
-        case RAISE:
-            if (record->event.pressed) {
-                if (TOG_STATUS) {
-                } else {
-                    TOG_STATUS = !TOG_STATUS;
-                }
-                layer_on(_RAISE);
-                update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-            } else {
-                layer_off(_RAISE);
-                TOG_STATUS = false;
-                update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-            }
-            return false;
-            break;
-        case ADJUST:
-            if (record->event.pressed) {
-                layer_on(_ADJUST);
-            } else {
-                layer_off(_ADJUST);
-            }
-            return false;
-            break;
-        case RGB_MOD:
-            #ifdef RGBLIGHT_ENABLE
-                if (record->event.pressed) {
-                    rgblight_mode(RGB_current_mode);
-                    rgblight_step();
-                    RGB_current_mode = rgblight_config.mode;
-                }
-            #endif
-            #ifdef RGB_MATRIX_ENABLE
-                if (record->event.pressed) {
-                    rgb_matrix_step();
-                }
-            #endif
-            return false;
-            break;
-        case RGBRST:
-            #ifdef RGBLIGHT_ENABLE
-                if (record->event.pressed) {
-                    eeconfig_update_rgblight_default();
-                    rgblight_enable();
-                    RGB_current_mode = rgblight_config.mode;
-                }
-            #endif
-            #ifdef RGB_MATRIX_ENABLE
-                if (record->event.pressed) {
-                    rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
-                    keyboard_post_init_user(); // 初期設定を再適用
-                }
-            #endif
-            break;
-    }
     return true;
 }

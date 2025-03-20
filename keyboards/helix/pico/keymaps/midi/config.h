@@ -30,14 +30,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // RGB Matrix設定
 #ifdef RGB_MATRIX_ENABLE
     // WS2812ドライバーの設定
-    #define RGB_DI_PIN D3  // LEDのデータピン（WS2812_DI_PINからRGB_DI_PINに変更）
+    #define RGB_DI_PIN D3  // LEDのデータピン
     #define RGB_MATRIX_LED_COUNT 50  // LEDの総数
     #define RGB_MATRIX_SPLIT { 25, 25 }  // 左右それぞれのLED数
-    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 100  // 最大輝度（0-255）
+    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 255  // 最大輝度（0-255）
     #define RGB_MATRIX_DEFAULT_VAL RGB_MATRIX_MAXIMUM_BRIGHTNESS  // デフォルトの輝度
     #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR  // デフォルトのモード
-    #define RGB_MATRIX_DEFAULT_HUE 0  // デフォルトの色相
-    #define RGB_MATRIX_DEFAULT_SAT 255  // デフォルトの彩度
     
     // 分割キーボードの同期設定
     #define RGB_MATRIX_KEYPRESSES  // キープレスに反応するエフェクトを有効化
