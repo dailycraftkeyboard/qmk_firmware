@@ -36,10 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #define RGB_MATRIX_DEFAULT_VAL 50  // デフォルトの輝度
     //#define RGB_MATRIX_LIMIT_VAL 50  // 輝度の上限
 
-    #define ENABLE_RGB_MATRIX_SOLID_REACTIVE
     
     // モード設定
-    #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR  // デフォルトのモード
+    #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR
     
     // エフェクトの選択
     #define ENABLE_RGB_MATRIX_SOLID_COLOR  // 単色モード

@@ -18,11 +18,6 @@
 
 // RGB Matrixの設定
 #ifdef RGB_MATRIX_ENABLE
-// デバッグモード用の変数
-bool debug_mode = false;
-uint8_t debug_led_index = 0;
-uint8_t debug_mode_type = 0; // 0: オフ, 1: LEDインデックス, 2: MIDIノート, 3: カラー設定, 4: 全て赤色
-
 // Cキーのインデックス
 const uint8_t c_key_indices[] = {17, 35, 45};
 
@@ -32,6 +27,32 @@ const uint8_t c_major_scale_indices[] = {
     8, 20, 21, 2, 14, 16,  // 左側
     26, 28, 29, 41, 32, 34 // 右側
 };
+
+// キーの元の色を保存する配列
+uint8_t original_colors[RGB_MATRIX_LED_COUNT][3];
+
+// キーが押されているかどうかを記録する配列
+bool key_pressed[RGB_MATRIX_LED_COUNT] = {false};
+
+// 関数プロトタイプ
+void initialize_led_colors(void);
+
+// RGB Matrixのカスタムインジケーター関数
+// この関数は、RGB Matrixのエフェクトが適用された後に呼び出される
+bool rgb_matrix_indicators_user(void) {
+    // すべてのLEDを初期状態に設定
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        // キーが押されていない場合のみ元の色に設定
+        if (!key_pressed[i]) {
+            rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
+        } else {
+            // キーが押されている場合は緑色に設定
+            rgb_matrix_set_color(i, 0, 255, 0);
+        }
+    }
+    
+    return false;
+}
 #endif
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
@@ -116,8 +137,6 @@ led_config_t g_led_config = {
 };
 #endif
 
-/*
-
 // MIDIノートとLEDインデックスのマッピング
 typedef struct {
     uint16_t note;    // MIDIノート番号（uint16_tに変更）
@@ -176,102 +195,6 @@ bool is_c_major_scale(uint16_t note) {
            note_value == 11;  // B
 }
 
-// キーの元の色を保存する配列
-uint8_t original_colors[RGB_MATRIX_LED_COUNT][3];
-
-// キーが押されているかどうかを記録する配列
-bool key_pressed[RGB_MATRIX_LED_COUNT] = {false};
-
-// LEDインデックスを順番に点灯させる関数
-void debug_show_led_indices(void) {
-    debug_mode = true;
-    debug_mode_type = 1;
-    debug_led_index = 0;
-    
-    // すべてのLEDを消灯
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        rgb_matrix_set_color(i, 0, 0, 0);
-    }
-}
-
-// MIDIノートとLEDインデックスの対応を確認する関数
-void debug_show_midi_note_mapping(void) {
-    debug_mode = true;
-    debug_mode_type = 2;
-    
-    // すべてのLEDを消灯
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        rgb_matrix_set_color(i, 0, 0, 0);
-    }
-    
-    // MIDIノートに対応するLEDを点灯
-    for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
-        uint16_t note = midi_led_map[i].note;
-        uint8_t led_idx = midi_led_map[i].led_idx;
-        
-        // Cノートは紫色
-        if (is_c_note(note)) {
-            rgb_matrix_set_color(led_idx, 191, 0, 255);
-        }
-        // Cメジャースケールは青色
-        else if (is_c_major_scale(note)) {
-            rgb_matrix_set_color(led_idx, 0, 0, 255);
-        }
-        // その他のノートは白色
-        else {
-            rgb_matrix_set_color(led_idx, 127, 127, 127);
-        }
-    }
-}
-
-// カラー設定を確認する関数
-void debug_show_color_settings(void) {
-    debug_mode = true;
-    debug_mode_type = 3;
-    
-    // すべてのLEDを元の色で点灯
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
-    }
-}
-
-// すべてのLEDを赤色に表示する関数
-void debug_show_all_red(void) {
-    debug_mode = true;
-    debug_mode_type = 4;
-    
-    // すべてのLEDを赤色で点灯
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        rgb_matrix_set_color(i, 255, 0, 0);
-    }
-}
-
-// デバッグモードの更新関数
-void debug_update(void) {
-    if (!debug_mode) return;
-    
-    static uint32_t last_update = 0;
-    uint32_t now = timer_read32();
-    
-    // LEDインデックス確認モードの場合
-    if (debug_mode_type == 1) {
-        // 1秒ごとに次のLEDに移動
-        if (now - last_update > 1000) {
-            // 前のLEDを消灯
-            rgb_matrix_set_color(debug_led_index, 0, 0, 0);
-            
-            // 次のLEDに移動
-            debug_led_index = (debug_led_index + 1) % RGB_MATRIX_LED_COUNT;
-            
-            // 現在のLEDを赤色に点灯
-            rgb_matrix_set_color(debug_led_index, 255, 0, 0);
-            
-            last_update = now;
-        }
-    }
-}
-#endif
-
 // すべてのLEDの色を初期化する関数
 void initialize_led_colors(void) {
     // すべてのLEDを黒（消灯）に初期化
@@ -325,79 +248,11 @@ void keyboard_post_init_user(void) {
     
     // LEDの色を初期化
     initialize_led_colors();
-    
-    // デバッグモードを無効化
-    debug_mode = false;
     #endif
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     #ifdef RGB_MATRIX_ENABLE
-    // デバッグモード切り替え
-    // ADJUST層でF1キーを押すとLEDインデックス確認モード
-    if (keycode == KC_F1 && record->event.pressed && layer_state_is(_ADJUST)) {
-        if (debug_mode && debug_mode_type == 1) {
-            // デバッグモードをオフ
-            debug_mode = false;
-            // 元の色に戻す
-            for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-                rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
-            }
-        } else {
-            // LEDインデックス確認モード
-            debug_show_led_indices();
-        }
-        return false;
-    }
-    
-    // ADJUST層でF2キーを押すとMIDIノート確認モード
-    if (keycode == KC_F2 && record->event.pressed && layer_state_is(_ADJUST)) {
-        if (debug_mode && debug_mode_type == 2) {
-            // デバッグモードをオフ
-            debug_mode = false;
-            // 元の色に戻す
-            for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-                rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
-            }
-        } else {
-            // MIDIノート確認モード
-            debug_show_midi_note_mapping();
-        }
-        return false;
-    }
-    
-    // ADJUST層でF3キーを押すとカラー設定確認モード
-    if (keycode == KC_F3 && record->event.pressed && layer_state_is(_ADJUST)) {
-        if (debug_mode && debug_mode_type == 3) {
-            // デバッグモードをオフ
-            debug_mode = false;
-            // 元の色に戻す
-            for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-                rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
-            }
-        } else {
-            // カラー設定確認モード
-            debug_show_color_settings();
-        }
-        return false;
-    }
-    
-    // ADJUST層でF4キーを押すと全てのLEDを赤色に表示
-    if (keycode == KC_F4 && record->event.pressed && layer_state_is(_ADJUST)) {
-        if (debug_mode && debug_mode_type == 4) {
-            // デバッグモードをオフ
-            debug_mode = false;
-            // 元の色に戻す
-            for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-                rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
-            }
-        } else {
-            // 全てのLEDを赤色に表示
-            debug_show_all_red();
-        }
-        return false;
-    }
-    
     // MIDIノートキーコードの場合
     if (keycode >= MI_C && keycode <= MI_Ds5) {
         uint8_t led_idx = get_led_index_from_midi_note(keycode);
@@ -453,10 +308,5 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 // マトリックススキャン関数
 void matrix_scan_user(void) {
-    #ifdef RGB_MATRIX_ENABLE
-    // デバッグモードの更新
-    debug_update();
-    #endif
+    // 必要に応じて処理を追加
 }
-
-*/
