@@ -17,18 +17,11 @@
 #include QMK_KEYBOARD_H
 #include "rgb_matrix.h"
 
-// RGB Matrixの設定
+// 外部関数のプロトタイプ宣言（rgb_matrix_user.incで定義）
 #ifdef RGB_MATRIX_ENABLE
-// キーの元の色を保存する配列
-uint8_t original_colors[RGB_MATRIX_LED_COUNT][3];
-
-// キーが押されているかどうかを記録する配列
-bool key_pressed[RGB_MATRIX_LED_COUNT] = {false};
-
-// 関数プロトタイプ
-void initialize_led_colors(void);
 // rgb_matrix_user.incで定義される関数のプロトタイプ
-bool process_record_rgb_matrix_user(uint16_t keycode, record_t *record);
+void set_key_pressed(uint8_t led_idx, bool pressed);
+void set_original_color(uint8_t led_idx, uint8_t r, uint8_t g, uint8_t b);
 #endif
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
@@ -173,59 +166,41 @@ bool is_c_major_scale(uint16_t note) {
 
 // すべてのLEDの色を初期化する関数
 void initialize_led_colors(void) {
-    dprintf("initialize_led_colors\n");
-    // すべてのLEDを黒（消灯）に初期化
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        original_colors[i][0] = 0;
-        original_colors[i][1] = 0;
-        original_colors[i][2] = 0;
-        rgb_matrix_set_color(i, 0, 0, 125);
-    }
-    
-    // MIDIノートに対応するLEDの色を設定
-    /*
-    for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
-        uint16_t note = midi_led_map[i].note;
-        uint8_t led_idx = midi_led_map[i].led_idx;
-        
-        // Cノートは紫色 (191, 0, 255)
-        if (is_c_note(note)) {
-            original_colors[led_idx][0] = 191;
-            original_colors[led_idx][1] = 0;
-            original_colors[led_idx][2] = 255;
-            rgb_matrix_set_color(led_idx, 191, 0, 255);
-        }
-        // Cメジャースケール（C以外）は青色 (0, 0, 255)
-        else if (is_c_major_scale(note)) {
-            original_colors[led_idx][0] = 0;
-            original_colors[led_idx][1] = 0;
-            original_colors[led_idx][2] = 255;
-            rgb_matrix_set_color(led_idx, 0, 0, 255);
-        }
-        // その他のノートは暗い灰色 (50, 50, 50)
-        else {
-            original_colors[led_idx][0] = 50;
-            original_colors[led_idx][1] = 50;
-            original_colors[led_idx][2] = 50;
-            rgb_matrix_set_color(led_idx, 50, 50, 50);
+    // キーマップをスキャンして、各キーのLEDの色を設定
+    for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
+        for (uint8_t col = 0; col < MATRIX_COLS; col++) {
+            uint8_t led_idx = g_led_config.matrix_co[row][col];
+            
+            // 有効なLEDインデックスの場合のみ処理
+            if (led_idx != NO_LED) {
+                // キーマップからキーコードを取得
+                uint16_t keycode = pgm_read_word(&keymaps[0][row][col]);
+                
+                // MIDIノートキーコードの場合のみ処理
+                if (keycode >= MI_C && keycode <= MI_Ds5) {
+                    // Cノートは紫色 (191, 0, 255)
+                    if (is_c_note(keycode)) {
+                        set_original_color(led_idx, 191, 0, 255);
+                    }
+                    // Cメジャースケール（C以外）は青色 (0, 0, 255)
+                    else if (is_c_major_scale(keycode)) {
+                        set_original_color(led_idx, 0, 0, 255);
+                    }
+                    // その他のノートは暗い灰色 (50, 50, 50)
+                    else {
+                        set_original_color(led_idx, 50, 50, 50);
+                    }
+                }
+            }
         }
     }
-    */
 }
 
-// keyboard_post_init_user関数
-void keyboard_post_init_kb(void) {
-    dprintf("keyboard_post_init_kb\n");
-    keyboard_post_init_user();
-}
-
+// キーボード初期化時の処理
 void keyboard_post_init_user(void) {
-    debug_enable=true;
-    //debug_matrix=true;
-    dprintf("keyboard_post_init_user\n");
-
+    debug_enable = true;
+    
     #ifdef RGB_MATRIX_ENABLE
-    dprintf("matrix: keyboard_post_init_user\n");
     rgb_matrix_enable();
     // pad64_effectモードを設定
     rgb_matrix_mode(RGB_MATRIX_CUSTOM_pad64_effect);
@@ -233,67 +208,64 @@ void keyboard_post_init_user(void) {
     #endif
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    printf("print process_record_user\n");
-    dprintf("process_record_user\n");
-
-    #ifdef RGB_MATRIX_ENABLE
-    dprintf("process_record_rgb_matrix_user\n");
-    // RGB行列のカスタムエフェクト用の関数を呼び出す
-    process_record_rgb_matrix_user(keycode, record);
-    #endif
-    return true;
-}
-/*
+// キー入力処理
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     #ifdef RGB_MATRIX_ENABLE
     // MIDIノートキーコードの場合
     if (keycode >= MI_C && keycode <= MI_Ds5) {
-        uint8_t led_idx = get_led_index_from_midi_note(keycode);
+        uint8_t row = record->event.key.row;
+        uint8_t col = record->event.key.col;
+        uint8_t led_idx = g_led_config.matrix_co[row][col];
         
-        if (led_idx != 255) {
+        if (led_idx != NO_LED) {
             if (record->event.pressed) {
                 // キーが押された時
-                key_pressed[led_idx] = true;
-                
-                // キーを緑色に設定
-                rgb_matrix_set_color(led_idx, 0, 255, 0);
+                set_key_pressed(led_idx, true);
                 
                 // 同じオクターブ内の同じノートのLEDも緑色に設定
                 uint8_t note_value = get_midi_note_value(keycode);
                 uint8_t octave = (keycode - MI_C) / 12;
                 
-                for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
-                    uint16_t other_note = midi_led_map[i].note;
-                    uint8_t other_led_idx = midi_led_map[i].led_idx;
-                    
-                    if (get_midi_note_value(other_note) == note_value &&
-                        (other_note - MI_C) / 12 == octave &&
-                        other_led_idx != led_idx) {
-                        key_pressed[other_led_idx] = true;
-                        rgb_matrix_set_color(other_led_idx, 0, 255, 0);
+                // 他のキーをスキャンして、同じオクターブ内の同じノートを探す
+                for (uint8_t r = 0; r < MATRIX_ROWS; r++) {
+                    for (uint8_t c = 0; c < MATRIX_COLS; c++) {
+                        if (r == row && c == col) continue; // 自分自身はスキップ
+                        
+                        uint8_t other_led_idx = g_led_config.matrix_co[r][c];
+                        if (other_led_idx == NO_LED) continue;
+                        
+                        uint16_t other_keycode = pgm_read_word(&keymaps[0][r][c]);
+                        if (other_keycode >= MI_C && other_keycode <= MI_Ds5) {
+                            if (get_midi_note_value(other_keycode) == note_value &&
+                                (other_keycode - MI_C) / 12 == octave) {
+                                set_key_pressed(other_led_idx, true);
+                            }
+                        }
                     }
                 }
             } else {
                 // キーが離された時
-                key_pressed[led_idx] = false;
-                
-                // キーを元の色に戻す
-                rgb_matrix_set_color(led_idx, original_colors[led_idx][0], original_colors[led_idx][1], original_colors[led_idx][2]);
+                set_key_pressed(led_idx, false);
                 
                 // 同じオクターブ内の同じノートのLEDも元の色に戻す
                 uint8_t note_value = get_midi_note_value(keycode);
                 uint8_t octave = (keycode - MI_C) / 12;
                 
-                for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
-                    uint16_t other_note = midi_led_map[i].note;
-                    uint8_t other_led_idx = midi_led_map[i].led_idx;
-                    
-                    if (get_midi_note_value(other_note) == note_value &&
-                        (other_note - MI_C) / 12 == octave &&
-                        other_led_idx != led_idx) {
-                        key_pressed[other_led_idx] = false;
-                        rgb_matrix_set_color(other_led_idx, original_colors[other_led_idx][0], original_colors[other_led_idx][1], original_colors[other_led_idx][2]);
+                // 他のキーをスキャンして、同じオクターブ内の同じノートを探す
+                for (uint8_t r = 0; r < MATRIX_ROWS; r++) {
+                    for (uint8_t c = 0; c < MATRIX_COLS; c++) {
+                        if (r == row && c == col) continue; // 自分自身はスキップ
+                        
+                        uint8_t other_led_idx = g_led_config.matrix_co[r][c];
+                        if (other_led_idx == NO_LED) continue;
+                        
+                        uint16_t other_keycode = pgm_read_word(&keymaps[0][r][c]);
+                        if (other_keycode >= MI_C && other_keycode <= MI_Ds5) {
+                            if (get_midi_note_value(other_keycode) == note_value &&
+                                (other_keycode - MI_C) / 12 == octave) {
+                                set_key_pressed(other_led_idx, false);
+                            }
+                        }
                     }
                 }
             }
@@ -303,5 +275,4 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     
     return true;
 }
-*/
 
