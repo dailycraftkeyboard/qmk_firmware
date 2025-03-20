@@ -186,9 +186,9 @@ void initialize_led_colors(void) {
                     else if (is_c_major_scale(keycode)) {
                         set_original_color(led_idx, 0, 0, 255);
                     }
-                    // その他のノートは暗い灰色 (50, 50, 50)
+                    // その他のノートは消灯 (0, 0, 0)
                     else {
-                        set_original_color(led_idx, 50, 50, 50);
+                        set_original_color(led_idx, 0, 0, 0);
                     }
                 }
             }
