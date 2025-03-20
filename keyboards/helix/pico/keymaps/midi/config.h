@@ -39,6 +39,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     // モード設定
     #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_pad64_effect
 
+    // 色の定義
+    #define C_NOTE_COLOR_R 95  // Cノートの赤成分
+    #define C_NOTE_COLOR_G 0   // Cノートの緑成分
+    #define C_NOTE_COLOR_B 127 // Cノートの青成分
+
+    #define SCALE_COLOR_R 0  // スケールノートの赤成分
+    #define SCALE_COLOR_G 0  // スケールノートの緑成分
+    #define SCALE_COLOR_B 255  // スケールノートの青成分
+
+    #define PRESSED_COLOR_R 0  // 押されたキーの赤成分
+    #define PRESSED_COLOR_G 127 // 押されたキーの緑成分
+    #define PRESSED_COLOR_B 0  // 押されたキーの青成分
+
 #endif
 
 

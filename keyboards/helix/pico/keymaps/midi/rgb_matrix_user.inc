@@ -40,7 +40,7 @@ static bool pad64_effect(effect_params_t* params) {
         // キーが押されている場合は緑色に設定（輝度を下げた）
         if (key_pressed[i]) {
             dprintf("pad64_effect / key pressed led_idx: %d\n", i);
-            rgb_matrix_set_color(i, 0, 127, 0);
+            rgb_matrix_set_color(i, PRESSED_COLOR_R, PRESSED_COLOR_G, PRESSED_COLOR_B);
         } else {
             // キーが押されていない場合は元の色に設定
             rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);

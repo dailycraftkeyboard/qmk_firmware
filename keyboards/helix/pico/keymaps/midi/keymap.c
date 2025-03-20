@@ -183,13 +183,13 @@ void initialize_led_colors(void) {
                 
                 // MIDIノートキーコードの場合のみ処理
                 if (keycode >= MI_C && keycode <= MI_Ds5) {
-                    // Cノートは紫色（輝度を下げた）
+                    // Cノートは紫色
                     if (is_c_note(keycode)) {
-                        set_original_color(led_idx, 95, 0, 127);
+                        set_original_color(led_idx, C_NOTE_COLOR_R, C_NOTE_COLOR_G, C_NOTE_COLOR_B);
                     }
-                    // Cメジャースケール（C以外）は青色（輝度を下げた）
+                    // Cメジャースケール（C以外）は青色
                     else if (is_c_major_scale(keycode)) {
-                        set_original_color(led_idx, 0, 0, 127);
+                        set_original_color(led_idx, SCALE_COLOR_R, SCALE_COLOR_G, SCALE_COLOR_B);
                     }
                     // その他のノートは消灯 (0, 0, 0)
                     else {
