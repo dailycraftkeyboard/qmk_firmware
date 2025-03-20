@@ -31,12 +31,15 @@ void set_original_color(uint8_t led_idx, uint8_t r, uint8_t g, uint8_t b) {
 
 // pad64_effectの実行関数
 static bool pad64_effect(effect_params_t* params) {
+    // dprintf("pad64_effect: Running on %s\n", is_keyboard_master() ? "MASTER" : "SLAVE");
     RGB_MATRIX_USE_LIMITS(led_min, led_max);
+    // dprintf("pad64_effect / led_min: %d, led_max: %d\n", led_min, led_max);
     
     // すべてのLEDをスキャンして色を設定
     for (uint8_t i = led_min; i < led_max; i++) {
         // キーが押されている場合は緑色に設定（輝度を下げた）
         if (key_pressed[i]) {
+            dprintf("pad64_effect / key pressed led_idx: %d\n", i);
             rgb_matrix_set_color(i, 0, 127, 0);
         } else {
             // キーが押されていない場合は元の色に設定

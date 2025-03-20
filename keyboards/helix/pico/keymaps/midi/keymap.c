@@ -230,6 +230,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 // キーが押された時
                 set_key_pressed(led_idx, true);
+                dprintf("key pressed led_idx: %d\n", led_idx);
                 
                 // 同じオクターブ内の同じノートのLEDも緑色に設定
                 uint8_t note_value = get_midi_note_value(keycode);
@@ -284,4 +285,3 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     
     return true;
 }
-

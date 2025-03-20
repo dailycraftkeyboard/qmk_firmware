@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 // place overrides here
+#define SPLIT_LAYER_STATE_ENABLE
+#define SPLIT_TRANSPORT_MIRROR
 
 #ifdef RGB_MATRIX_ENABLE
     // WS2812ドライバーの設定
@@ -38,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_pad64_effect
 
 #endif
+
 
 #define MIDI_ADVANCED
 
