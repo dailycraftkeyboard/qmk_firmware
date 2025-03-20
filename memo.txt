@@ -1,0 +1,88 @@
+# Helix Pico MIDIキーマップのRGB Matrix設定状況
+
+## 目標
+1. Cキー（MI_C、MI_C1、MI_C2、MI_C3など）を常に紫色に設定
+2. Cメジャースケールのキー（D、E、F、G、A、B）を常に青色に設定
+3. キーが押されたときに、そのキーのLEDを緑色に点灯
+4. 同じオクターブ内の同じMIDIノートのLEDも緑色に点灯
+5. キーが離されたときに、元の色（紫または青）に戻す
+
+## 現在の設定
+### config.h
+```c
+// RGB Matrix設定
+#ifdef RGB_MATRIX_ENABLE
+    // WS2812ドライバーの設定
+    #define RGB_DI_PIN D3  // LEDのデータピン
+    #define DRIVER_LED_TOTAL 50  // LEDの総数（別名）
+    #define RGB_MATRIX_LED_COUNT DRIVER_LED_TOTAL  // LEDの総数
+    #define RGB_MATRIX_SPLIT { 25, 25 }  // 左右それぞれのLED数
+    #define SPLIT_TRANSPORT_MIRROR  // 左右のLED状態を同期
+    
+    // 輝度設定
+    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 50  // 最大輝度（0-255）を50に下げる
+    #define RGB_MATRIX_DEFAULT_VAL 50  // デフォルトの輝度
+    #define RGB_MATRIX_LIMIT_VAL 50  // 輝度の上限
+    
+    // モード設定
+    #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR  // デフォルトのモード
+    
+    // エフェクトの選択
+    #define ENABLE_RGB_MATRIX_SOLID_COLOR  // 単色モード
+    #define ENABLE_RGB_MATRIX_ALPHAS_MODS  // アルファキーとモディファイアキーで異なる色
+    #define ENABLE_RGB_MATRIX_BREATHING  // ブリージングエフェクト
+    #define ENABLE_RGB_MATRIX_SOLID_REACTIVE  // キープレスに反応するエフェクト
+    #define ENABLE_RGB_MATRIX_SOLID_REACTIVE_SIMPLE  // シンプルなキープレス反応エフェクト
+    
+    // 省電力設定
+    #define RGB_DISABLE_WHEN_USB_SUSPENDED  // USB接続が切断されたときにRGBを無効化
+    
+    // デバッグ設定
+    #define DEBUG_MATRIX_SCAN_RATE
+    #define DEBUG_LED_MATRIX
+#endif
+```
+
+### rules.mk
+```c
+EXTRAKEY_ENABLE = yes       # Audio control and System control
+AUDIO_ENABLE = no          # Audio output
+MIDI_ENABLE = yes           # MIDI support
+LTO_ENABLE = yes  # if firmware size over limit, try this option
+
+# RGB Matrix
+RGB_MATRIX_ENABLE = yes
+RGB_MATRIX_DRIVER = ws2812
+
+# Disable features to reduce firmware size
+COMMAND_ENABLE = no
+CONSOLE_ENABLE = no
+MOUSEKEY_ENABLE = no
+SPACE_CADET_ENABLE = no
+GRAVE_ESC_ENABLE = no
+
+#VIA_ENABLE = yes
+DYNAMIC_KEYMAP_LAYER_COUNT = 6
+```
+
+### keymap.c
+- MIDIノートとLEDインデックスのマッピングを定義
+- keyboard_post_init_user関数でLEDの初期化を行い、特定のLEDを色分けして設定
+- process_record_user関数でキープレス時のLED制御を実装
+
+## 現在の進捗状況
+- RGB Matrixの基本的な設定は完了し、LEDを赤色に点灯させることができました。
+- しかし、特定のキーを特定の色に設定する機能や、キープレス時のLED制御が正しく動作していません。
+- LEDのインデックスと実際のキーの対応関係が不明確です。
+
+## 問題点
+1. 特定のLEDを色分けして設定する機能が正しく動作していない
+2. キープレス時のLED制御が正しく動作していない
+3. LEDのインデックスと実際のキーの対応関係が不明確
+4. wait_ms関数が初期化時に正しく動作しない可能性がある
+
+## 次のステップ
+1. LEDのインデックスと実際のキーの対応関係を確認する
+2. MIDIノートとLEDインデックスのマッピングを修正する
+3. keyboard_post_init_user関数を修正して、より単純な実装にする
+4. process_record_user関数を修正して、キープレス時のLED制御を改善する

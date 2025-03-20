@@ -15,13 +15,13 @@
  */
 #include QMK_KEYBOARD_H
 
-#ifdef RGBLIGHT_ENABLE
-//Following line allows macro to read current RGB settings
-extern rgblight_config_t rgblight_config;
-#endif
-
 // RGB Matrixの設定
 #ifdef RGB_MATRIX_ENABLE
+// デバッグモード用の変数
+bool debug_mode = false;
+uint8_t debug_led_index = 0;
+uint8_t debug_mode_type = 0; // 0: オフ, 1: LEDインデックス, 2: MIDIノート, 3: カラー設定, 4: 全て赤色
+
 // Cキーのインデックス
 const uint8_t c_key_indices[] = {17, 35, 45};
 
@@ -39,18 +39,12 @@ const uint8_t c_major_scale_indices[] = {
 // entirely and just use numbers.
 enum layer_number {
     _QWERTY = 0,
-    _LOWER,
-    _RAISE,
     _ADJUST
 };
 
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
-  LOWER,
-  RAISE,
   ADJUST,
-  BACKLIT,
-  RGBRST
 };
 
 enum macro_keycodes {
@@ -62,50 +56,13 @@ enum macro_keycodes {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-  /* Qwerty
-   * ,-----------------------------------------.             ,-----------------------------------------.
-   * | Tab  |   Q  |   W  |   E  |   R  |   T  |             |   Y  |   U  |   I  |   O  |   P  | Bksp |
-   * |------+------+------+------+------+------|             |------+------+------+------+------+------|
-   * | Ctrl |   A  |   S  |   D  |   F  |   G  |             |   H  |   J  |   K  |   L  |   ;  |  '   |
-   * |------+------+------+------+------+------|             |------+------+------+------+------+------|
-   * | Shift|   Z  |   X  |   C  |   V  |   B  |             |   N  |   M  |   ,  |   .  |   /  |Enter |
-   * |------+------+------+------+------+------+-------------+------+------+------+------+------+------|
-   * |Adjust| Esc  | Alt  | GUI  | EISU |Lower |Space |Space |Raise | KANA | Left | Down |  Up  |Right |
-   * `-------------------------------------------------------------------------------------------------'
-   */
-
 [_QWERTY] = LAYOUT(
       MI_F1,   MI_Fs1,  MI_G1,   MI_Gs1,  MI_A1,   MI_As1,                     MI_Cs3,  MI_D3,   MI_Ds3,  MI_E3,   MI_F3,   MI_Fs3,
       MI_C1,   MI_Cs1,  MI_D1,   MI_Ds1,  MI_E1,   MI_F1,                      MI_Gs2,  MI_A2,   MI_As2,  MI_B2,   MI_C3,   MI_Cs3,
       MI_G,    MI_Gs,   MI_A,    MI_As,   MI_B,    MI_C1,                       MI_Ds2,  MI_E2,   MI_F2,  MI_Fs2,  MI_G2,   MI_Gs2,
-      MI_D,    MI_Ds,   MI_E,    MI_F,    MI_Fs,   MI_G,    QK_BOOT, QK_BOOT,  MI_As1,  MI_B1,   MI_C2,   MI_Cs2,  MI_D2,   MI_Ds2
+      MI_D,    MI_Ds,   MI_E,    MI_F,    MI_Fs,   MI_G,    ADJUST, QK_BOOT,  MI_As1,  MI_B1,   MI_C2,   MI_Cs2,  MI_D2,   MI_Ds2
       ),
 
-
-[_LOWER] = LAYOUT(
-      KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                   KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_DEL,
-      _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                     KC_F6,   KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,
-      _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,                    KC_F12,  _______, KC_PSCR, KC_HOME, KC_END,  _______,
-      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY
-      ),
-
-  /* Raise
-   * ,-----------------------------------------.             ,-----------------------------------------.
-   * |   `  |   1  |   2  |   3  |   4  |   5  |             |   6  |   7  |   8  |   9  |   0  | Del  |
-   * |------+------+------+------+------+------|             |------+------+------+------+------+------|
-   * |      |  F1  |  F2  |  F3  |  F4  |  F5  |             |  F6  |   -  |   =  |   [  |   ]  |  \   |
-   * |------+------+------+------+------+------|             |------+------+------+------+------+------|
-   * |      |  F7  |  F8  |  F9  |  F10 |  F11 |             |  F12 |      | PrSc |PageDn|PageUp|      |
-   * |------+------+------+------+------+------+-------------+------+------+------+------+------+------|
-   * |      |      |      |      |      |      |      |      |      |      | Next | Vol- | Vol+ | Play |
-   * `-------------------------------------------------------------------------------------------------'
-   */
-  [_RAISE] = LAYOUT(
-      KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                      KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_DEL,
-      _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                     KC_F6,   KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS,
-      _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,                    KC_F12,  _______, KC_PSCR, KC_PGDN, KC_PGUP, _______,
-      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY
-      ),
 
   /* Adjust (Lower + Raise)
    * ,-----------------------------------------.             ,-----------------------------------------.
@@ -119,22 +76,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * `-------------------------------------------------------------------------------------------------'
    */
   [_ADJUST] =  LAYOUT(
-      _______, QK_BOOT,   RGBRST, _______, _______, _______,                  _______, _______, _______, _______, _______, _______,
+      _______, KC_F1,   KC_F2, KC_F3, KC_F4, _______,                  _______, _______, _______, _______, _______, _______,
       _______, AU_ON,   AU_OFF,  MU_TOGG, MU_NEXT, AG_NORM,                   AG_SWAP, QWERTY,  _______, _______, _______, _______,
       _______, CK_TOGG, CK_RST,  CK_UP,   CK_DOWN, _______,                   _______, _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD
       )
 };
-
-
-
-#ifdef AUDIO_ENABLE
-
-float tone_qwerty[][2]     = SONG(QWERTY_SOUND);
-float tone_plover[][2]     = SONG(PLOVER_SOUND);
-float tone_plover_gb[][2]  = SONG(PLOVER_GOODBYE_SOUND);
-float music_scale[][2]     = SONG(MUSIC_SCALE_SOUND);
-#endif
 
 #ifdef RGB_MATRIX_ENABLE
 // キーとLEDの対応関係を定義
@@ -142,14 +89,14 @@ led_config_t g_led_config = {
     // キーマトリックスからLEDインデックスへのマッピング
     {
         // 左側のキーボード
-        { 0,  1,  2,  3,  4,  5 },
-        { 6,  7,  8,  9, 10, 11 },
-        { 12, 13, 14, 15, 16, 17 },
-        { 18, 19, 20, 21, 22, 23, 24 },
+        { 5,  4,  3,  2,  1,  0 , NO_LED},
+        { 11, 10,  9,  8,  7,  6 , NO_LED},
+        { 12, 13, 14, 15, 16, 17 , NO_LED},
+        { 24, 23, 22, 21, 20, 19 , 18},
         // 右側のキーボード
-        { 25, 26, 27, 28, 29, 30 },
-        { 31, 32, 33, 34, 35, 36 },
-        { 37, 38, 39, 40, 41, 42 },
+        { 25, 26, 27, 28, 29, 30 , NO_LED},
+        { 31, 32, 33, 34, 35, 36 , NO_LED},
+        { 37, 38, 39, 40, 41, 42 , NO_LED},
         { 43, 44, 45, 46, 47, 48, 49 }
     },
     // LEDの物理的な位置
@@ -178,6 +125,9 @@ led_config_t g_led_config = {
         4, 4, 4, 4, 4, 4, 4
     }
 };
+#endif
+
+/*
 
 // MIDIノートとLEDインデックスのマッピング
 typedef struct {
@@ -242,9 +192,136 @@ uint8_t original_colors[RGB_MATRIX_LED_COUNT][3];
 
 // キーが押されているかどうかを記録する配列
 bool key_pressed[RGB_MATRIX_LED_COUNT] = {false};
+
+// LEDインデックスを順番に点灯させる関数
+void debug_show_led_indices(void) {
+    debug_mode = true;
+    debug_mode_type = 1;
+    debug_led_index = 0;
+    
+    // すべてのLEDを消灯
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        rgb_matrix_set_color(i, 0, 0, 0);
+    }
+}
+
+// MIDIノートとLEDインデックスの対応を確認する関数
+void debug_show_midi_note_mapping(void) {
+    debug_mode = true;
+    debug_mode_type = 2;
+    
+    // すべてのLEDを消灯
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        rgb_matrix_set_color(i, 0, 0, 0);
+    }
+    
+    // MIDIノートに対応するLEDを点灯
+    for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
+        uint16_t note = midi_led_map[i].note;
+        uint8_t led_idx = midi_led_map[i].led_idx;
+        
+        // Cノートは紫色
+        if (is_c_note(note)) {
+            rgb_matrix_set_color(led_idx, 191, 0, 255);
+        }
+        // Cメジャースケールは青色
+        else if (is_c_major_scale(note)) {
+            rgb_matrix_set_color(led_idx, 0, 0, 255);
+        }
+        // その他のノートは白色
+        else {
+            rgb_matrix_set_color(led_idx, 127, 127, 127);
+        }
+    }
+}
+
+// カラー設定を確認する関数
+void debug_show_color_settings(void) {
+    debug_mode = true;
+    debug_mode_type = 3;
+    
+    // すべてのLEDを元の色で点灯
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
+    }
+}
+
+// すべてのLEDを赤色に表示する関数
+void debug_show_all_red(void) {
+    debug_mode = true;
+    debug_mode_type = 4;
+    
+    // すべてのLEDを赤色で点灯
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        rgb_matrix_set_color(i, 255, 0, 0);
+    }
+}
+
+// デバッグモードの更新関数
+void debug_update(void) {
+    if (!debug_mode) return;
+    
+    static uint32_t last_update = 0;
+    uint32_t now = timer_read32();
+    
+    // LEDインデックス確認モードの場合
+    if (debug_mode_type == 1) {
+        // 1秒ごとに次のLEDに移動
+        if (now - last_update > 1000) {
+            // 前のLEDを消灯
+            rgb_matrix_set_color(debug_led_index, 0, 0, 0);
+            
+            // 次のLEDに移動
+            debug_led_index = (debug_led_index + 1) % RGB_MATRIX_LED_COUNT;
+            
+            // 現在のLEDを赤色に点灯
+            rgb_matrix_set_color(debug_led_index, 255, 0, 0);
+            
+            last_update = now;
+        }
+    }
+}
 #endif
 
-// 元のkeyboard_post_init_user関数を修正
+// すべてのLEDの色を初期化する関数
+void initialize_led_colors(void) {
+    // すべてのLEDを黒（消灯）に初期化
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+        original_colors[i][0] = 0;
+        original_colors[i][1] = 0;
+        original_colors[i][2] = 0;
+    }
+    
+    // MIDIノートに対応するLEDの色を設定
+    for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
+        uint16_t note = midi_led_map[i].note;
+        uint8_t led_idx = midi_led_map[i].led_idx;
+        
+        // Cノートは紫色 (191, 0, 255)
+        if (is_c_note(note)) {
+            original_colors[led_idx][0] = 191;
+            original_colors[led_idx][1] = 0;
+            original_colors[led_idx][2] = 255;
+            rgb_matrix_set_color(led_idx, 191, 0, 255);
+        }
+        // Cメジャースケール（C以外）は青色 (0, 0, 255)
+        else if (is_c_major_scale(note)) {
+            original_colors[led_idx][0] = 0;
+            original_colors[led_idx][1] = 0;
+            original_colors[led_idx][2] = 255;
+            rgb_matrix_set_color(led_idx, 0, 0, 255);
+        }
+        // その他のノートは暗い灰色 (50, 50, 50)
+        else {
+            original_colors[led_idx][0] = 50;
+            original_colors[led_idx][1] = 50;
+            original_colors[led_idx][2] = 50;
+            rgb_matrix_set_color(led_idx, 50, 50, 50);
+        }
+    }
+}
+
+// keyboard_post_init_user関数
 void keyboard_post_init_user(void) {
     #ifdef RGB_MATRIX_ENABLE
     // RGB Matrixを有効化
@@ -254,70 +331,84 @@ void keyboard_post_init_user(void) {
     // すべてのLEDを黒（消灯）に設定
     rgb_matrix_sethsv(0, 0, 0);
     
-    // まず、すべてのLEDを赤色に設定して初期化確認
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        rgb_matrix_set_color(i, 255, 0, 0);
-    }
+    // 少し待機（安定化のため）
+    wait_ms(100);
     
-    // 2秒待機
-    wait_ms(2000);
+    // LEDの色を初期化
+    initialize_led_colors();
     
-    // すべてのLEDを黒（消灯）に設定
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        rgb_matrix_set_color(i, 0, 0, 0);
-    }
-    
-    // 1秒待機
-    wait_ms(1000);
-    
-    // 各LEDを順番に点灯させて確認（デバッグ用）
-    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
-        // 現在のLEDを緑色に点灯
-        rgb_matrix_set_color(i, 0, 255, 0);
-        
-        // 0.1秒待機
-        wait_ms(100);
-        
-        // 現在のLEDを消灯
-        rgb_matrix_set_color(i, 0, 0, 0);
-    }
-    
-    // 1秒待機
-    wait_ms(1000);
-    
-    // Cキーを紫色に設定
-    for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
-        uint16_t note = midi_led_map[i].note;
-        uint8_t led_idx = midi_led_map[i].led_idx;
-        uint8_t note_value = get_midi_note_value(note);
-        
-        if (note_value == 0) { // Cキー
-            // Cキーは紫色 (RGB: 191, 0, 255)
-            rgb_matrix_set_color(led_idx, 191, 0, 255);
-            original_colors[led_idx][0] = 191;
-            original_colors[led_idx][1] = 0;
-            original_colors[led_idx][2] = 255;
-        } else if ((note_value == 2 || note_value == 4 || note_value == 5 ||
-                   note_value == 7 || note_value == 9 || note_value == 11) &&
-                   note_value != 0) { // Cメジャースケールのキー（C以外）
-            // Cメジャースケールのキー（C以外）は青色 (RGB: 0, 0, 255)
-            rgb_matrix_set_color(led_idx, 0, 0, 255);
-            original_colors[led_idx][0] = 0;
-            original_colors[led_idx][1] = 0;
-            original_colors[led_idx][2] = 255;
-        } else {
-            // その他のキーは消灯
-            rgb_matrix_set_color(led_idx, 0, 0, 0);
-            original_colors[led_idx][0] = 0;
-            original_colors[led_idx][1] = 0;
-            original_colors[led_idx][2] = 0;
-        }
-    }
+    // デバッグモードを無効化
+    debug_mode = false;
     #endif
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     #ifdef RGB_MATRIX_ENABLE
+    // デバッグモード切り替え
+    // ADJUST層でF1キーを押すとLEDインデックス確認モード
+    if (keycode == KC_F1 && record->event.pressed && layer_state_is(_ADJUST)) {
+        if (debug_mode && debug_mode_type == 1) {
+            // デバッグモードをオフ
+            debug_mode = false;
+            // 元の色に戻す
+            for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+                rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
+            }
+        } else {
+            // LEDインデックス確認モード
+            debug_show_led_indices();
+        }
+        return false;
+    }
+    
+    // ADJUST層でF2キーを押すとMIDIノート確認モード
+    if (keycode == KC_F2 && record->event.pressed && layer_state_is(_ADJUST)) {
+        if (debug_mode && debug_mode_type == 2) {
+            // デバッグモードをオフ
+            debug_mode = false;
+            // 元の色に戻す
+            for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+                rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
+            }
+        } else {
+            // MIDIノート確認モード
+            debug_show_midi_note_mapping();
+        }
+        return false;
+    }
+    
+    // ADJUST層でF3キーを押すとカラー設定確認モード
+    if (keycode == KC_F3 && record->event.pressed && layer_state_is(_ADJUST)) {
+        if (debug_mode && debug_mode_type == 3) {
+            // デバッグモードをオフ
+            debug_mode = false;
+            // 元の色に戻す
+            for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+                rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
+            }
+        } else {
+            // カラー設定確認モード
+            debug_show_color_settings();
+        }
+        return false;
+    }
+    
+    // ADJUST層でF4キーを押すと全てのLEDを赤色に表示
+    if (keycode == KC_F4 && record->event.pressed && layer_state_is(_ADJUST)) {
+        if (debug_mode && debug_mode_type == 4) {
+            // デバッグモードをオフ
+            debug_mode = false;
+            // 元の色に戻す
+            for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+                rgb_matrix_set_color(i, original_colors[i][0], original_colors[i][1], original_colors[i][2]);
+            }
+        } else {
+            // 全てのLEDを赤色に表示
+            debug_show_all_red();
+        }
+        return false;
+    }
+    
     // MIDIノートキーコードの場合
     if (keycode >= MI_C && keycode <= MI_Ds5) {
         uint8_t led_idx = get_led_index_from_midi_note(keycode);
@@ -370,3 +461,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     
     return true;
 }
+
+// マトリックススキャン関数
+void matrix_scan_user(void) {
+    #ifdef RGB_MATRIX_ENABLE
+    // デバッグモードの更新
+    debug_update();
+    #endif
+}
+
+*/

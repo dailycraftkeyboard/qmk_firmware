@@ -2,9 +2,10 @@ EXTRAKEY_ENABLE = yes       # Audio control and System control
 AUDIO_ENABLE = no          # Audio output
 MIDI_ENABLE = yes           # MIDI support
 LTO_ENABLE = yes  # if firmware size over limit, try this option
-LED_ANIMATIONS = yes        # LED animations
-RGBLIGHT_ENABLE = no       # Disable WS2812 RGB underlight
-RGB_MATRIX_ENABLE = yes    # Enable per-key RGB Matrix
-RGB_MATRIX_DRIVER = ws2812  # Use WS2812 driver (小文字に修正)
+
+# RGB Matrix
+RGB_MATRIX_ENABLE = yes
+RGB_MATRIX_DRIVER = ws2812
+
 #VIA_ENABLE = yes
 DYNAMIC_KEYMAP_LAYER_COUNT = 6
