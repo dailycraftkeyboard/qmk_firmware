@@ -78,7 +78,7 @@ led_config_t g_led_config = {
     // キーマトリックスからLEDインデックスへのマッピング
     {
         // 左側のキーボード
-        { 5,  4,  3,  2,  1,  0 , NO_LED},
+        { 5, 4,  3,  2,  1,  0 , NO_LED},
         { 6, 7,  8,  9,  10, 11 , NO_LED},
         { 17, 16, 15, 14, 13, 12 , NO_LED},
         { 18, 19, 20, 21, 22, 23 , 24},
@@ -115,8 +115,6 @@ led_config_t g_led_config = {
     }
 };
 #endif
-
-// MIDIノートの値を取得する関数
 
 // MIDIノートの値を取得する関数
 uint8_t get_midi_note_value(uint16_t note) {
@@ -157,30 +155,18 @@ void initialize_led_colors(void) {
         for (uint8_t col = 0; col < MATRIX_COLS; col++) {
             uint8_t led_idx = g_led_config.matrix_co[row][col];
             
-            // 有効なLEDインデックスの場合のみ処理
-            if (led_idx != NO_LED) {
-                // キーマップからキーコードを取得
-                uint16_t keycode = pgm_read_word(&keymaps[0][row][col]);
-                
-                // MIDIノートキーコードの場合のみ処理
-                if (keycode >= MI_C && keycode <= MI_Ds5) {
-                    // Cノートは紫色
-                    if (is_c_note(keycode)) {
-                        set_original_color(led_idx, C_NOTE_COLOR_R, C_NOTE_COLOR_G, C_NOTE_COLOR_B);
-                    }
-                    // Cメジャースケール（C以外）は青色
-                    else if (is_c_major_scale(keycode)) {
-                        set_original_color(led_idx, SCALE_COLOR_R, SCALE_COLOR_G, SCALE_COLOR_B);
-                    }
-                    // その他のノートは消灯 (0, 0, 0)
-                    else {
-                        set_original_color(led_idx, 0, 0, 0);
-                    }
-                }
-                // MIDIノートキーコード以外は消灯
-                else {
-                    set_original_color(led_idx, 0, 0, 0);
-                }
+            if (led_idx == NO_LED) continue;
+            
+            // キーマップからキーコードを取得
+            uint16_t keycode = pgm_read_word(&keymaps[0][row][col]);
+            
+            // Cノートは紫色
+            if (is_c_note(keycode)) {
+                set_original_color(led_idx, C_NOTE_COLOR_R, C_NOTE_COLOR_G, C_NOTE_COLOR_B);
+            }
+            // Cメジャースケール（C以外）は青色
+            else if (is_c_major_scale(keycode)) {
+                set_original_color(led_idx, SCALE_COLOR_R, SCALE_COLOR_G, SCALE_COLOR_B);
             }
         }
     }
@@ -192,7 +178,6 @@ void keyboard_post_init_user(void) {
     
     #ifdef RGB_MATRIX_ENABLE
     rgb_matrix_enable();
-    // pad64_effectモードを設定
     rgb_matrix_mode(RGB_MATRIX_CUSTOM_pad64_effect);
     initialize_led_colors();
     #endif
@@ -201,6 +186,7 @@ void keyboard_post_init_user(void) {
 // キー入力処理
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     #ifdef RGB_MATRIX_ENABLE
+
     // MIDIノートキーコードの場合
     if (keycode >= MI_C && keycode <= MI_Ds5) {
         uint8_t row = record->event.key.row;
