@@ -29,12 +29,14 @@ void set_original_color(uint8_t led_idx, uint8_t r, uint8_t g, uint8_t b);
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
 enum layer_number {
-    _QWERTY = 0,
+    _C = 0,
+    _D,
     _ADJUST
 };
 
 enum custom_keycodes {
-  QWERTY = SAFE_RANGE,
+  C_LAYER = SAFE_RANGE,
+  D_LAYER,
   ADJUST,
 };
 
@@ -47,14 +49,22 @@ enum macro_keycodes {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-[_QWERTY] = LAYOUT(
-      MI_F1,   MI_Fs1,  MI_G1,   MI_Gs1,  MI_A1,   MI_As1,                     MI_Cs3,  MI_D3,   MI_Ds3,  MI_E3,   MI_F3,   MI_Fs3,
-      MI_C1,   MI_Cs1,  MI_D1,   MI_Ds1,  MI_E1,   MI_F1,                      MI_Gs2,  MI_A2,   MI_As2,  MI_B2,   MI_C3,   MI_Cs3,
-      MI_G,    MI_Gs,   MI_A,    MI_As,   MI_B,    MI_C1,                       MI_Ds2,  MI_E2,   MI_F2,  MI_Fs2,  MI_G2,   MI_Gs2,
-      MI_D,    MI_Ds,   MI_E,    MI_F,    MI_Fs,   MI_G,    MO(_ADJUST), MO(ADJUST),  MI_As1,  MI_B1,   MI_C2,   MI_Cs2,  MI_D2,   MI_Ds2
+[_C] = LAYOUT(
+      MI_Ds1,  MI_E1,   MI_F1,   MI_Fs1,  MI_G1,   MI_Gs1,                            MI_B3,   MI_C3,   MI_Cs3,  MI_D3,   MI_Ds3,  MI_E3,
+      MI_As,   MI_B,    MI_C1,   MI_Cs1,  MI_D1,   MI_Ds1,                            MI_Fs2,  MI_G2,   MI_Gs2,  MI_A2,   MI_As2,  MI_B3,
+      MI_F,    MI_Fs,   MI_G,    MI_Gs,   MI_A,    MI_As,                             MI_Cs2,  MI_D2,   MI_Ds2,  MI_E2,   MI_F2,   MI_Fs2,
+      MI_C,    MI_Cs,   MI_D,    MI_Ds,   MI_E,    MI_F,    MO(_ADJUST), MO(_ADJUST), MI_Gs1,  MI_A1,   MI_As1,  MI_B1,   MI_C2,   MI_Cs2
       ),
 
-  [_ADJUST] =  LAYOUT(
+
+[_D] = LAYOUT(
+      MI_F1,   MI_Fs1,  MI_G1,   MI_Gs1,  MI_A1,   MI_As1,                     MI_Cs3,  MI_D3,   MI_Ds3,  MI_E3,   MI_F3,   MI_Fs3,
+      MI_C1,   MI_Cs1,  MI_D1,   MI_Ds1,  MI_E1,   MI_F1,                      MI_Gs2,  MI_A2,   MI_As2,  MI_B2,   MI_C3,   MI_Cs3,
+      MI_G,    MI_Gs,   MI_A,    MI_As,   MI_B,    MI_C1,                      MI_Ds2,  MI_E2,   MI_F2,   MI_Fs2,  MI_G2,   MI_Gs2,
+      MI_D,    MI_Ds,   MI_E,    MI_F,    MI_Fs,   MI_G,    MO(_ADJUST), MO(_ADJUST),  MI_As1,  MI_B1,   MI_C2,   MI_Cs2,  MI_D2,   MI_Ds2
+      ),
+
+[_ADJUST] =  LAYOUT(
       RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, _______, _______,                  _______, _______, _______, _______, _______, _______,
       RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD, _______, _______,                  _______, _______, _______, _______, _______, _______,
       RGB_RMOD, RGB_MOD, _______, _______, _______, _______,                  _______, _______, _______, _______, _______, _______,
