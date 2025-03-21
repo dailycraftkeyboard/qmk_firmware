@@ -116,36 +116,7 @@ led_config_t g_led_config = {
 };
 #endif
 
-// MIDIノートとLEDインデックスのマッピング
-typedef struct {
-    uint16_t note;    // MIDIノート番号（uint16_tに変更）
-    uint8_t led_idx;  // LEDインデックス
-} midi_led_map_t;
-
-// キーマップからMIDIノートとLEDインデックスのマッピングを作成
-const midi_led_map_t midi_led_map[] = {
-    // 左側のキーボード
-    {MI_D,    18}, {MI_Ds,   19}, {MI_E,    20}, {MI_F,    21}, {MI_Fs,   22}, {MI_G,    23},
-    {MI_G,    12}, {MI_Gs,   13}, {MI_A,    14}, {MI_As,   15}, {MI_B,    16}, {MI_C1,   17},
-    {MI_C1,    6}, {MI_Cs1,   7}, {MI_D1,    8}, {MI_Ds1,   9}, {MI_E1,   10}, {MI_F1,   11},
-    {MI_F1,    0}, {MI_Fs1,   1}, {MI_G1,    2}, {MI_Gs1,   3}, {MI_A1,    4}, {MI_As1,   5},
-    
-    // 右側のキーボード
-    {MI_Cs3,  25}, {MI_D3,   26}, {MI_Ds3,  27}, {MI_E3,   28}, {MI_F3,   29}, {MI_Fs3,  30},
-    {MI_Gs2,  31}, {MI_A2,   32}, {MI_As2,  33}, {MI_B2,   34}, {MI_C3,   35}, {MI_Cs3,  36},
-    {MI_Ds2,  37}, {MI_E2,   38}, {MI_F2,   39}, {MI_Fs2,  40}, {MI_G2,   41}, {MI_Gs2,  42},
-    {MI_As1,  43}, {MI_B1,   44}, {MI_C2,   45}, {MI_Cs2,  46}, {MI_D2,   47}, {MI_Ds2,  48}
-};
-
-// MIDIノートからLEDインデックスを取得する関数
-uint8_t get_led_index_from_midi_note(uint16_t note) {
-    for (uint8_t i = 0; i < sizeof(midi_led_map) / sizeof(midi_led_map_t); i++) {
-        if (midi_led_map[i].note == note) {
-            return midi_led_map[i].led_idx;
-        }
-    }
-    return 255; // 見つからない場合は255を返す
-}
+// MIDIノートの値を取得する関数
 
 // MIDIノートの値を取得する関数
 uint8_t get_midi_note_value(uint16_t note) {
