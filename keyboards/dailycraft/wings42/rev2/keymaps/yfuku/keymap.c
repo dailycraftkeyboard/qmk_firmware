@@ -29,25 +29,25 @@ enum layer_number {
 };
 
 #define TAPPING_LAYER_TERM 250
-#define TAPPING_LAYER_LATE_TERM 800
+#define TAPPING_LAYER_LATE_TERM 3000
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    case GS_S:
+    case G_F:   // F - cmd
+    case C_G:   // G - ctrl
+    case C_H:   // H - ctrl
+    case G_J:   // J - cmd
       return TAPPING_LAYER_TERM;
-    case GS_L:
-      return TAPPING_LAYER_TERM;
-    case A_D:
+
+    case CS_TAB:   // Tab  - ctrl shift
+    case AS_A:     // A    - shift alt
+    case GS_S:     // S    - shift cmd
+    case A_D:      // D    - alt
+    case A_K:      // K    - alt
+    case GS_L:     // L    - shift cmd
+    case AS_SCLN:  // ;    - shift alt
+    case CS_ESC:   // Esc  - ctrl shift
       return TAPPING_LAYER_LATE_TERM;
-    case A_K:
-      return TAPPING_LAYER_LATE_TERM;
-    case AS_A:
-      return TAPPING_LAYER_LATE_TERM;
-    case AS_SCLN:
-      return TAPPING_LAYER_LATE_TERM;
-    case ASG_TAB:
-      return TAPPING_LAYER_LATE_TERM;
-    case ASG_ESC:
-      return TAPPING_LAYER_LATE_TERM;
+
     default:
       return 180;
   }

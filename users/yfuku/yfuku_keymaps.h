@@ -37,19 +37,19 @@
 #define AS_A LSA_T(KC_A)
 #define AS_SCLN LSA_T(KC_SCLN)
 
-// alt+shit+cmd
-#define ASG_MOD (MOD_LALT | MOD_LSFT | MOD_LGUI)
-#define ASG_TAB MT(ASG_MOD, KC_TAB)
-#define ASG_ESC MT(ASG_MOD, KC_ESC)
+// ctrl+shift_t
+#define CS_MOD (MOD_LCTL | MOD_LSFT)
+#define CS_TAB MT(CS_MOD, KC_TAB)
+#define CS_ESC MT(CS_MOD, KC_ESC)
 
 #define __QWERTY_L1__ KC_ESC, KC_Q, KC_W, KC_E, KC_R, KC_T
 //#define __QWERTY_L2__ KC_TAB, KC_A, GS_S, A_D, G_F, C_G
-#define __QWERTY_L2__ ASG_TAB, AS_A, GS_S, A_D, G_F, C_G
+#define __QWERTY_L2__ CS_TAB, AS_A, GS_S, A_D, G_F, C_G
 #define __QWERTY_L3__ KC_LEFT, KC_Z, KC_X, KC_C, KC_V, KC_B
 
 #define __QWERTY_R1__ KC_Y, KC_U, KC_I, KC_O, KC_P, KC_MINS
 //#define __QWERTY_R2__ C_H, G_J, A_K, GS_L, KC_SCLN, KC_ESC 
-#define __QWERTY_R2__ C_H, G_J, A_K, GS_L, AS_SCLN, ASG_ESC 
+#define __QWERTY_R2__ C_H, G_J, A_K, GS_L, AS_SCLN, CS_ESC 
 #define __QWERTY_R3__ KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RGHT
 
 #define __QUERTY_T3__ KC_RGHT, S_EN, L_SPC, R_ENT, S_JA, KC_LEFT
