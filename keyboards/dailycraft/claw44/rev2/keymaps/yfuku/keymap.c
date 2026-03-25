@@ -28,7 +28,7 @@ enum layer_number {
     _ADJUST,
 };
 
-#define TAPPING_LAYER_TERM 230
+#define TAPPING_LAYER_TERM 500
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case GS_S:
